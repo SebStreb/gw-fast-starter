@@ -29,16 +29,22 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  static const tiles = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
+  static const tiles = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
   Random random = Random();
 
-  String randomize(String tile) {
-    return tile + (random.nextBool() ? "A" : "B");
+  String randomize(int tile) {
+    return "Tile $tile${random.nextBool() ? "A" : "B"}";
+  }
+
+  List<int> takeFour() {
+    final copy = [...tiles]..shuffle(random);
+    return copy.take(4).toList()..sort();
   }
 
   @override
   Widget build(BuildContext context) {
+    final cards = takeFour();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -52,19 +58,46 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Center(
-          child: ListView(
-            shrinkWrap: true,
+        child: SingleChildScrollView(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              for (String tile in tiles)
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
+              Column(
+                children: [
+                  const Text(
                     textAlign: TextAlign.center,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                    randomize(tile),
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                    "Player tiles",
                   ),
-                )
+                  const SizedBox(height: 16),
+                  for (int tile in tiles)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Text(
+                        textAlign: TextAlign.center,
+                        randomize(tile),
+                      ),
+                    )
+                ],
+              ),
+              Column(
+                children: [
+                  const Text(
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                    "Bonus cards",
+                  ),
+                  const SizedBox(height: 16),
+                  Text("Card ${cards[0]}"),
+                  const SizedBox(height: 8),
+                  Text("Card ${cards[1]}"),
+                  const SizedBox(height: 8),
+                  Text("Card ${cards[2]}"),
+                  const SizedBox(height: 8),
+                  Text("Card ${cards[3]}"),
+                ],
+              ),
             ],
           ),
         ),
